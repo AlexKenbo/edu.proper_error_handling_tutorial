@@ -19,12 +19,8 @@ class FakeHttpClient {
 class PostService {
   final httpClient = FakeHttpClient();
   Future<Post> getOnePost() async {
-    try {
       final responseBody = await httpClient.getResponseBody();
       return Post.fromJson(responseBody);
-    } catch (e) {
-      print(e);
-    }
   }
 }
 
