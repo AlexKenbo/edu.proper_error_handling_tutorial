@@ -1,31 +1,83 @@
 import 'package:flutter/material.dart';
 
+import 'post_service.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      home: MyHomePage(),
+      title: 'Material App',
+      home: Home(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomeState createState() => _HomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeState extends State<Home> {
+  final postService = PostService();
+  Future<Post> postFuture;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Text'),
+        title: Text('Error Handling'),
       ),
-      body: Container(),// This trailing comma makes auto-formatting nicer for build methods.
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            FutureBuilder<Post>(
+              future: postFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  final error = snapshot.error;
+                  return StyledText(error.toString());
+                } else if (snapshot.hasData) {
+                  final post = snapshot.data;
+                  return StyledText(post.toString());
+                } else {
+                  return StyledText('Press the button 👇🏼');
+                }
+              },
+            ),
+            RaisedButton(
+              child: Text('Get Post'),
+              onPressed: () async {
+                setState(() {
+                  postFuture = postService.getOnePost();
+                });
+              },
+            ),
+          ],
+        ),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class StyledText extends StatelessWidget {
+  const StyledText(
+    this.text, {
+    Key key,
+  }) : super(key: key);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 40),
     );
   }
 }
