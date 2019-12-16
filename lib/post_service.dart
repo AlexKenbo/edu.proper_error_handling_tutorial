@@ -7,7 +7,7 @@ class FakeHttpClient {
   Future<String> getResponseBody() async {
     await Future.delayed(Duration(milliseconds: 500));
     //! No Internet Connection
-    // throw SocketException('No Internet');
+    throw SocketException('No Internet');
     //! 404
     // throw HttpException('404');
     //! Invalid JSON (throws FormatException)
