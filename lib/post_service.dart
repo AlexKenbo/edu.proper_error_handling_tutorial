@@ -19,8 +19,16 @@ class FakeHttpClient {
 class PostService {
   final httpClient = FakeHttpClient();
   Future<Post> getOnePost() async {
+    try {
       final responseBody = await httpClient.getResponseBody();
       return Post.fromJson(responseBody);
+    } on SocketException {
+      print('No Internet connection 😑');
+    } on HttpException {
+      print("Couldn't find the post 😱");
+    } on FormatException {
+      print("Bad response format 👎");
+    }
   }
 }
 
