@@ -9,9 +9,9 @@ class FakeHttpClient {
     //! No Internet Connection
     // throw SocketException('No Internet');
     //! 404
-    throw HttpException('404');
+    // throw HttpException('404');
     //! Invalid JSON (throws FormatException)
-    // return 'abcd';
+    return 'abcd';
     return '{"userId":1,"id":1,"title":"nice title","body":"cool body"}';
   }
 }
