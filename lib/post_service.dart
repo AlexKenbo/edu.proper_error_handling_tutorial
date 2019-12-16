@@ -23,14 +23,22 @@ class PostService {
       final responseBody = await httpClient.getResponseBody();
       return Post.fromJson(responseBody);
     } on SocketException {
-      rethrow;
-      //print('No Internet connection 😑');
+      throw Failure('No Internet connection 😑');
     } on HttpException {
-      print("Couldn't find the post 😱");
+      throw Failure("Couldn't find the post 😱");
     } on FormatException {
-      print("Bad response format 👎");
+      throw Failure("Bad response format 👎");
     }
   }
+}
+
+class Failure {
+  final String message;
+
+  Failure(this.message);
+
+  @override
+  String toString() => message;
 }
 
 class Post {
