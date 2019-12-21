@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:proper_error_handling_tutorial/post_service.dart';
 
@@ -13,28 +14,19 @@ class PostChangeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Post _post;
-  Post get post => _post;
-  void _setPost(Post post) {
-    _post = post;
-    notifyListeners();
-  }
-
-  Failure _failure;
-  Failure get failure => _failure;
-  void _setFailure(Failure failure) {
-    _failure = failure;
+  Either<Failure, Post> _postOrFailure;
+  Either<Failure, Post> get postOrFailure => _postOrFailure;
+  void _setPostOrFailure(Either<Failure, Post> postOrFailure) {
+    _postOrFailure = postOrFailure;
     notifyListeners();
   }
 
   void getOnePost() async {
     _setState(NotifierState.loading);
-    try {
-      final post = await _postService.getOnePost();
-      _setPost(post);
-    } on Failure catch (f) {
-      _setFailure(f);
-    }
+    await Task(() => _postService.getOnePost())
+        .attempt()
+        .run()
+        .then((value) => _setPostOrFailure(value));
     _setState(NotifierState.loaded);
   }
 }
