@@ -25,6 +25,11 @@ class PostChangeNotifier extends ChangeNotifier {
     _setState(NotifierState.loading);
     await Task(() => _postService.getOnePost())
         .attempt()
+        .map(
+          (either) => either.leftMap((obj) {
+            return obj as Failure;
+          }),
+        )
         .run()
         .then((value) => _setPostOrFailure(value));
     _setState(NotifierState.loaded);
