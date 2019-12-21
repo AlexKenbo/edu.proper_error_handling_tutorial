@@ -25,17 +25,23 @@ class PostChangeNotifier extends ChangeNotifier {
     _setState(NotifierState.loading);
     await Task(() => _postService.getOnePost())
         .attempt()
-        .map(
-          (either) => either.leftMap((obj) {
-            try {
-              return obj as Failure;
-            } catch (e) {
-              throw obj;
-            }
-          }),
-        )
+        .mapLeftToFailure()
         .run()
         .then((value) => _setPostOrFailure(value));
     _setState(NotifierState.loaded);
+  }
+}
+
+extension TaskX<T extends Either<Object, U>, U> on Task<T> {
+  Task<Either<Failure, U>> mapLeftToFailure() {
+    return this.map(
+      (either) => either.leftMap((obj) {
+        try {
+          return obj as Failure;
+        } catch (e) {
+          throw obj;
+        }
+      }),
+    );
   }
 }
