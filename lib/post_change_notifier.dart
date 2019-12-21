@@ -27,7 +27,11 @@ class PostChangeNotifier extends ChangeNotifier {
         .attempt()
         .map(
           (either) => either.leftMap((obj) {
-            return obj as Failure;
+            try {
+              return obj as Failure;
+            } catch (e) {
+              throw obj;
+            }
           }),
         )
         .run()
